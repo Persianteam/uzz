@@ -59,9 +59,9 @@ local function lock_group_name(msg, data)
     if not is_momod(msg) then
         return "For moderators only!"
     end
-    local group_name_set = data[tostring(msg.to.id)]['settings']['set_name']
-    local group_name_lock = data[tostring(msg.to.id)]['settings']['lock_name']
-	if group_name_lock == 'yes' then
+    local channel_set_name = data[tostring(msg.to.id)]['settings']['set_name']
+    local channel_lock_name = data[tostring(msg.to.id)]['settings']['lock_name']
+	if channel_lock_name == 'yes' then
 	    return 'Group name is already locked'
 	else
 	    data[tostring(msg.to.id)]['settings']['lock_name'] = 'yes'
@@ -72,13 +72,13 @@ local function lock_group_name(msg, data)
 	end
 end
 
-local function unlock_group_name(msg, data)
+local function channel_unlock_name(msg, data)
     if not is_momod(msg) then
         return "For moderators only!"
     end
-    local group_name_set = data[tostring(msg.to.id)]['settings']['set_name']
-    local group_name_lock = data[tostring(msg.to.id)]['settings']['lock_name']
-	if group_name_lock == 'no' then
+    local channel_set_name = data[tostring(msg.to.id)]['settings']['set_name']
+    local channel_lock_name = data[tostring(msg.to.id)]['settings']['lock_name']
+	if channel_lock_name == 'no' then
 	    return 'Group name is already unlocked'
 	else
 	    data[tostring(msg.to.id)]['settings']['lock_name'] = 'no'
@@ -233,16 +233,16 @@ function run(msg, matches)
 		if matches[1] == 'group' and matches[2] == 'settings' then
 		    return show_group_settings(msg, data)
 		end
-		if matches[1] == 'chat_rename' then
+		if matches[1] == 'channel_set_name' then
 		    if not msg.service then
 		        return "Are you trying to troll me?"
 		    end
-		    local group_name_set = settings.set_name
+		    local channel_set_name = settings.set_name
 		    local group_name_lock = settings.lock_name
-		    local to_rename = 'chat#id'..msg.to.id
+		    local to_rename = 'channel#id'..msg.to.id
 		    if group_name_lock == 'yes' then
-		        if group_name_set ~= tostring(msg.to.print_name) then
-		            rename_chat(to_rename, group_name_set, ok_cb, false)
+		        if channel_set_name ~= tostring(msg.to.print_name) then
+		            rename_channel(to_rename, channel_set_name, ok_cb, false)
 		        end
 		    elseif group_name_lock == 'no' then
                 return nil
@@ -252,9 +252,9 @@ function run(msg, matches)
 		    local new_name = string.gsub(matches[2], '_', ' ')
 		    data[tostring(msg.to.id)]['settings']['set_name'] = new_name
 		    save_data(_config.moderation.data, data) 
-		    local group_name_set = data[tostring(msg.to.id)]['settings']['set_name']
-		    local to_rename = 'chat#id'..msg.to.id
-		    rename_chat(to_rename, group_name_set, ok_cb, false)
+		    local channel_set_name = data[tostring(msg.to.id)]['settings']['set_name']
+		    local to_rename = 'channel#id'..msg.to.id
+		    rename_channel(to_rename, channel_set_name, ok_cb, false)
 		end
 		if matches[1] == 'setphoto' and is_momod(msg) then
 		    data[tostring(msg.to.id)]['settings']['set_photo'] = 'waiting'
@@ -267,7 +267,7 @@ function run(msg, matches)
 		    end
 		    local group_member_lock = settings.lock_member
 		    local user = 'user#id'..msg.action.user.id
-		    local chat = 'chat#id'..msg.to.id
+		    local chat = 'channel#id'..msg.to.id
 		    if group_member_lock == 'yes' then
 		        chat_del_user(chat, user, ok_cb, true)
 		    elseif group_member_lock == 'no' then
