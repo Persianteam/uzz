@@ -70,7 +70,7 @@ local function pre_process(msg)
   end
 
   -- BANNED USER TALKING
-  if msg.to.type == 'chat' then
+  if msg.to.type == 'chat' or msg.to.type == 'channel' then
     local user_id = msg.from.id
     local chat_id = msg.to.id
     local superbanned = is_super_banned(user_id)
@@ -100,7 +100,7 @@ local function pre_process(msg)
 
     if not allowed then
       print('User '..msg.from.id..' not whitelisted')
-      if msg.to.type == 'chat' then
+      if msg.to.type == 'chat' or msg.to.type == 'channel' then
         allowed = is_chat_whitelisted(msg.to.id)
         if not allowed then
           print ('Chat '..msg.to.id..' not whitelisted')
@@ -175,7 +175,7 @@ local function run(msg, matches)
   if matches[1] == 'ban' then
     local user_id = matches[3]
     local chat_id = msg.to.id
-    if msg.to.type == 'chat' then
+    if msg.to.type == 'chat' or msg.to.type == 'channel' then
       if matches[2] == 'user' then
         if string.match(matches[3], '^%d+$') then
             ban_user(user_id, chat_id)
@@ -215,7 +215,7 @@ local function run(msg, matches)
   end
 
   if matches[1] == 'kick' then
-    if msg.to.type == 'chat' then
+    if msg.to.type == 'chat' or msg.to.type == 'channel' then
       if string.match(matches[2], '^%d+$') then
           kick_user(matches[2], msg.to.id)
       else
@@ -251,8 +251,8 @@ local function run(msg, matches)
       end
     end
 
-    if matches[2] == 'chat' then
-      if msg.to.type ~= 'chat' then
+    if matches[2] == 'chat'then
+      if msg.to.type ~= 'chat' or msg.to.type ~= 'channel' then
         return 'This isn\'t a chat group'
       end
       local hash = 'whitelist:chat#id'..msg.to.id
@@ -271,8 +271,8 @@ local function run(msg, matches)
       end
     end
 
-    if matches[2] == 'delete' and matches[3] == 'chat' then
-      if msg.to.type ~= 'chat' then
+    if matches[2] == 'delete' and matches[3] == 'chat'then
+      if msg.to.type ~= 'chat' or msg.to.type ~= 'channel' then
         return 'This isn\'t a chat group'
       end
       local hash = 'whitelist:chat#id'..msg.to.id
